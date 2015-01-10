@@ -122,7 +122,7 @@ class MultiLayerPerceptron:
             delta2 = np.atleast_2d(delta2)
             # self.weight2 -= learning_rate * np.dot((delta2.T,x)
 
-            dt_weight2 = inertia*dt_weight2 - learning_rate * np.dot(delta2.T, x)
+            dt_weight2 = inertia*dt_weight2 - learning_rate * np.dot(delta2.T, z)
             self.weight2 += dt_weight2
 
     def predict(self, x):
