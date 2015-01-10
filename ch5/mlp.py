@@ -80,16 +80,19 @@ class MultiLayerPerceptron:
         self.weight1 = np.random.uniform(-1.0, 1.0, (self.numHidden, self.numInput))  # 入力層-隠れ層間
         self.weight2 = np.random.uniform(-1.0, 1.0, (self.numOutput, self.numHidden)) # 隠れ層-出力層間
 
-    def fit(self, X, t, learning_rate=0.1, epochs=10000):
+    def fit(self, X, t, learning_rate=0.1, epochs=10000,inertia=0.1):
         """訓練データを用いてネットワークの重みを更新する"""
         # 入力データの最初の列にバイアスユニットの入力1を追加
         X = np.hstack([np.ones([X.shape[0], 1]), X])
         t = np.array(t)
+        
+        dt_weight1 = 0
+        dt_weight2 = 0
 
         # 逐次学習
         # 訓練データからランダムサンプリングして重みを更新をepochs回繰り返す
         for k in range(epochs):
-            print k
+            # print k
 
             # 訓練データからランダムに選択する
             i = np.random.randint(X.shape[0])
@@ -111,12 +114,16 @@ class MultiLayerPerceptron:
             # 行列演算になるので2次元ベクトルに変換する必要がある
             x = np.atleast_2d(x)
             delta1 = np.atleast_2d(delta1)
-            self.weight1 -= learning_rate * np.dot(delta1.T, x)
+            dt_weight1 = inertia*dt_weight1 - learning_rate * np.dot(delta1.T, x)
+            self.weight1 += dt_weight1
 
             # 出力層の誤差を用いて出力層の重みを更新
             z = np.atleast_2d(z)
             delta2 = np.atleast_2d(delta2)
-            self.weight2 -= learning_rate * np.dot(delta2.T, z)
+            # self.weight2 -= learning_rate * np.dot((delta2.T,x)
+
+            dt_weight2 = inertia*dt_weight2 - learning_rate * np.dot(delta2.T, x)
+            self.weight2 += dt_weight2
 
     def predict(self, x):
         """テストデータの出力を予測"""
